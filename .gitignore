@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.Python
+env/
+venv/
+*.egg-info/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build/Cache
+dist/
+build/
+.cache
+out/
+
+# Foundry
+cache/
+artifacts/
+
+# Coverage
+coverage/
+.coverage
+
+# Temporary
+tmp/
+temp/
