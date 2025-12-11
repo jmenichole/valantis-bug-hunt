@@ -1,60 +1,66 @@
-# Valantis STEX - Official Contract Addresses
+# Valantis Core - Official Contract Addresses
 
 **Network**: Ethereum Mainnet  
 **Date Identified**: December 11, 2025  
-**Status**: ✅ CONFIRMED TARGETS
+**Status**: ✅ CONFIRMED TARGETS - CORRECTED  
+**Source**: https://docs.valantis.xyz/ (Valantis Core Deployments)
 
 ---
 
-## Core Contracts
+## Core Protocol Contracts
 
-### 1. stHYPE (Staked HYPE Token)
-- **Address**: `0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1`
-- **Type**: Proxy Contract
-- **Function**: Liquid Staking Token for HYPE
-- **Priority**: 🔴 CRITICAL - Core asset
+### 1. Protocol Factory
+- **Address**: `0x29939b3b2aD83882174a50DFD80a3B6329C4a603`
+- **Type**: Factory Contract
+- **Function**: Deploys Sovereign Pools
+- **Priority**: 🔴 CRITICAL - Creates all pools
+- **Interface**: IProtocolFactory
+- **GitHub**: ValantisLabs/valantis-core
 
-### 2. OverseerV1
-- **Address**: `0xB96f07367e69e86d6e9C3F49215885104813eeAE`
-- **Type**: Implementation Contract
-- **Function**: Protocol oversight and management
-- **Priority**: 🔴 CRITICAL - Access control
-
-### 3. wstHYPE Proxy
-- **Address**: `0x94e8396e0869c9F2200760aF0621aFd240E1CF38`
-- **Type**: Proxy Contract
-- **Function**: Wrapped stHYPE (similar to wstETH pattern)
-- **Priority**: 🟠 HIGH - Derivative asset
+### 2. Sovereign Pool Factory
+- **Address**: `0xa68d6c59Cf3048292dc4EC1F76ED9DEf8b6F9617`
+- **Type**: Factory Contract
+- **Function**: Creates Sovereign Pool instances
+- **Priority**: 🔴 CRITICAL - Pool creation logic
+- **Interface**: Custom factory pattern
 
 ---
 
 ## Investigation Priority
 
-### Phase 1: Proxy Contracts (Pattern 1 Focus)
-1. ✅ stHYPE Proxy - `0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1`
-2. ✅ wstHYPE Proxy - `0x94e8396e0869c9F2200760aF0621aFd240E1CF38`
+### Phase 1: Factory Contracts (Pattern 1 & 6 Focus)
+1. 🎯 Protocol Factory - `0x29939b3b2aD83882174a50DFD80a3B6329C4a603`
+2. 🎯 Sovereign Pool Factory - `0xa68d6c59Cf3048292dc4EC1F76ED9DEf8b6F9617`
 
 **Why these first?**
-- Proxy contracts are prime candidates for Pattern 1 (Proxy Initialization Bypass)
-- Both are asset-holding contracts (high value target)
-- Recent deployments may have vulnerabilities
+- Factory contracts control pool deployment
+- Pattern 1: Check if pools can be initialized by anyone
+- Pattern 6: Access control on deploySovereignPool()
+- High-value targets (control entire protocol)
 
-### Phase 2: Overseer Contract
-3. ✅ OverseerV1 - `0xB96f07367e69e86d6e9C3F49215885104813eeAE`
+### Phase 2: Deployed Sovereign Pools
+3. 🎯 Discover existing pools via factory events
+4. 🎯 Analyze pool initialization patterns
+5. 🎯 Check setALM() and setPoolManager() security
 
 **Analysis focus:**
-- Access control mechanisms (Pattern 6)
-- Governance functions (Pattern 5)
-- Admin privileges
+- Pool initialization vulnerabilities (Pattern 1)
+- Access control on setALM, setPoolManager (Pattern 6)
+- Flash loan reentrancy in pools (Pattern 2)
+- Oracle manipulation if Oracle Module used (Pattern 3)
 
 ---
 
 ## Quick Links
 
 ### Etherscan URLs
-- [stHYPE](https://etherscan.io/address/0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1)
-- [OverseerV1](https://etherscan.io/address/0xB96f07367e69e86d6e9C3F49215885104813eeAE)
-- [wstHYPE](https://etherscan.io/address/0x94e8396e0869c9F2200760aF0621aFd240E1CF38)
+- [Protocol Factory](https://etherscan.io/address/0x29939b3b2aD83882174a50DFD80a3B6329C4a603)
+- [Sovereign Pool Factory](https://etherscan.io/address/0xa68d6c59Cf3048292dc4EC1F76ED9DEf8b6F9617)
+
+### GitHub Repository
+- [Valantis Core](https://github.com/ValantisLabs/valantis-core)
+- Interface: `src/protocol-factory/interfaces/IProtocolFactory.sol`
+- Structs: `src/pools/structs/SovereignPoolStructs.sol`
 
 ---
 
