@@ -3,13 +3,13 @@
  * Discovers and analyzes all relevant contracts in the Valantis STEX ecosystem
  */
 
-const Web3 = require('web3');
+const { Web3 } = require('web3');
 const axios = require('axios');
 require('dotenv').config();
 
 class STEXContractDiscovery {
   constructor() {
-    this.web3 = new Web3(process.env.MAINNET_RPC);
+    this.web3 = new Web3(process.env.MAINNET_RPC || 'http://localhost:8545');
     this.etherscan = axios.create({
       baseURL: 'https://api.etherscan.io/api',
       params: {
