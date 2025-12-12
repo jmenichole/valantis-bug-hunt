@@ -1,6 +1,6 @@
 # Valantis STEX Bug Bounty Analysis
 
-**Researcher**: Jamie  
+**Researcher**: jmenichole  
 **Portfolio**: https://jmenichole.github.io/Portfolio/  
 **Program**: Valantis STEX ($200K Max Payout)  
 **Status**: Active Investigation
