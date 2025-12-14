@@ -11,8 +11,17 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@biconomy/abstractjs": "^1.1.19",
+    "@biconomy/mexa": "^2.0.38",
+    "@biconomy/sdk": "^0.0.29",
+    "@flashbots/ethers-provider-bundle": "^1.0.0",
+    "@gelatonetwork/relay-sdk": "^4.0.0",
+    "@metamask/delegation-toolkit": "^0.13.0",
+    "@metamask/providers": "^22.1.1",
+    "@rhinestone/module-sdk": "^0.4.0",
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
+    "ethers": "^5.8.0",
     "web3": "^4.16.0"
   }
 }

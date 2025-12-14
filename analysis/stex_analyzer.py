@@ -16,7 +16,7 @@ class STEXAnalyzer:
     """
 
     def __init__(self, rpc_url: str = None):
-        self.rpc_url = rpc_url or os.getenv('MAINNET_RPC')
+        self.rpc_url = rpc_url or self._load_rpc_from_config_or_env()
         self.w3 = Web3(Web3.HTTPProvider(self.rpc_url))
         self.vulnerabilities = []
         self.patterns = {
@@ -29,6 +29,37 @@ class STEXAnalyzer:
             'signature_validation': self._check_signature_validation,
             'storage_collision': self._check_storage_collision,
         }
+
+    def _load_rpc_from_config_or_env(self) -> str:
+        """
+        Resolve RPC endpoint with precedence:
+        1) Explicit argument
+        2) ENV per active network: SEPOLIA_RPC or MAINNET_RPC
+        3) config.json with activeNetwork and networks map
+        """
+        # ENV first
+        env_mainnet = os.getenv('MAINNET_RPC')
+        env_sepolia = os.getenv('SEPOLIA_RPC')
+        # Try config.json
+        config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.json')
+        rpc = None
+        try:
+            with open(config_path, 'r') as f:
+                cfg = json.load(f)
+            active = cfg.get('activeNetwork', 'mainnet')
+            net_map = cfg.get('networks', {})
+            if active == 'sepolia' and env_sepolia:
+                rpc = env_sepolia
+            elif active == 'mainnet' and env_mainnet:
+                rpc = env_mainnet
+            else:
+                rpc = net_map.get(active) or env_mainnet or env_sepolia
+        except Exception:
+            # Fallback to envs
+            rpc = env_mainnet or env_sepolia
+        if not rpc:
+            raise RuntimeError('No RPC configured. Set MAINNET_RPC or SEPOLIA_RPC, or update config.json.')
+        return rpc
 
     # Pattern 1: Proxy Initialization Bypass
     def _check_proxy_initialization(self, contract_address: str) -> Dict[str, Any]:
@@ -418,7 +449,30 @@ class STEXAnalyzer:
 if __name__ == '__main__':
     analyzer = STEXAnalyzer()
     
-    # Example: analyze a contract
-    test_address = '0x0000000000000000000000000000000000000000'
-    results = analyzer.analyze_contract(test_address)
-    print(analyzer.generate_report(results))
+    # Load target contracts from config
+    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.json')
+    try:
+        with open(config_path, 'r') as f:
+            cfg = json.load(f)
+        target_contracts = []
+        for factory in cfg.get('targetContracts', {}).get('factories', []):
+            target_contracts.append(factory['address'])
+        
+        if not target_contracts:
+            print('⚠️  No target contracts configured in config.json')
+            print('   Add addresses to targetContracts.factories[] to begin scanning.')
+            exit(1)
+        
+        print(f'🎯 Scanning {len(target_contracts)} target contract(s)...\n')
+        
+        for address in target_contracts:
+            results = analyzer.analyze_contract(address)
+            print(analyzer.generate_report(results))
+            print('\n' + '='*60 + '\n')
+            
+    except FileNotFoundError:
+        print('❌ config.json not found')
+        exit(1)
+    except Exception as e:
+        print(f'❌ Error: {e}')
+        exit(1)

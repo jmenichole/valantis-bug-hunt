@@ -11,9 +11,33 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 
+function resolveRpc() {
+  const configPath = path.join(__dirname, '..', 'config.json');
+  let rpc = null;
+  try {
+    const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    const active = cfg.activeNetwork || 'mainnet';
+    const nets = cfg.networks || {};
+    if (active === 'sepolia' && process.env.SEPOLIA_RPC) {
+      rpc = process.env.SEPOLIA_RPC;
+    } else if (active === 'mainnet' && process.env.MAINNET_RPC) {
+      rpc = process.env.MAINNET_RPC;
+    } else {
+      rpc = nets[active] || process.env.MAINNET_RPC || process.env.SEPOLIA_RPC;
+    }
+  } catch (e) {
+    rpc = process.env.MAINNET_RPC || process.env.SEPOLIA_RPC;
+  }
+  if (!rpc) {
+    throw new Error('No RPC configured. Set MAINNET_RPC or SEPOLIA_RPC, or update config.json.');
+  }
+  return rpc;
+}
+
 class DailyScanOrchestrator {
   constructor() {
     this.discovery = new STEXContractDiscovery();
+    this.rpcUrl = resolveRpc();
     this.scanResults = {
       timestamp: new Date().toISOString(),
       patterns: [],
@@ -389,7 +413,45 @@ class DailyScanOrchestrator {
 // Main execution
 async function main() {
   const orchestrator = new DailyScanOrchestrator();
+  
+  // Load target contracts from config
+  const configPath = path.join(__dirname, '..', 'config.json');
+  let targetContracts = [];
+  
+  try {
+    const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    const factories = cfg.targetContracts?.factories || [];
+    targetContracts = factories.map(f => ({
+      name: f.name,
+      address: f.address,
+      priority: f.priority
+    }));
+    
+    if (targetContracts.length === 0) {
+      console.log('⚠️  No target contracts configured in config.json');
+      console.log('   Add addresses to targetContracts.factories[] to begin scanning.');
+      process.exit(1);
+    }
+    
+    console.log(`🎯 Target Contracts (${targetContracts.length}):\n`);
+    targetContracts.forEach(c => {
+      console.log(`   ${c.priority === 'CRITICAL' ? '🔴' : '🟠'} ${c.name}: ${c.address}`);
+    });
+    console.log('');
+    
+  } catch (err) {
+    console.error('❌ Error loading config.json:', err.message);
+    process.exit(1);
+  }
+  
   const results = await orchestrator.runDailyScan();
+  
+  console.log('\n🔍 Next Steps:');
+  console.log('   1. Review pattern test cases above');
+  console.log('   2. Develop PoC exploits for high-priority patterns');
+  console.log('   3. Run: forge test --fork-url "$SEPOLIA_RPC" -vvv');
+  console.log('   4. Document findings in reports/');
+  
   process.exit(0);
 }
 

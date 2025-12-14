@@ -22,15 +22,31 @@
     "storage_collision_vulnerabilities"
   ],
   "networks": {
-    "mainnet": "https://eth-mainnet.g.alchemy.com/v2/",
+    "mainnet": "https://divine-maximum-replica.quiknode.pro/9c451c095c15764e0db8c6443bafbcbd881c1fe7",
     "arbitrum": "https://arb-mainnet.g.alchemy.com/v2/",
-    "optimism": "https://opt-mainnet.g.alchemy.com/v2/"
+    "optimism": "https://opt-mainnet.g.alchemy.com/v2/",
+    "sepolia": "https://divine-maximum-replica.ethereum-sepolia.quiknode.pro/9c451c095c15764e0db8c6443bafbcbd881c1fe7"
   },
-  "targetContacts": {
-    "sovereignPool": [],
+  "activeNetwork": "mainnet",
+  "testingMode": "fork",
+  "targetContracts": {
+    "factories": [
+      {
+        "name": "Protocol Factory",
+        "address": "0x29939b3b2aD83882174a50DFD80a3B6329C4a603",
+        "priority": "CRITICAL",
+        "patterns": [1, 6]
+      },
+      {
+        "name": "Sovereign Pool Factory",
+        "address": "0xa68d6c59Cf3048292dc4EC1F76ED9DEf8b6F9617",
+        "priority": "CRITICAL",
+        "patterns": [1, 6]
+      }
+    ],
+    "sovereignPools": [],
     "stexModules": [],
     "yieldAssets": [],
-    "oracles": [],
-    "thirdPartyProtocols": []
+    "oracles": []
   }
 }

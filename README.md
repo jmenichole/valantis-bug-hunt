@@ -9,6 +9,22 @@
 
 This repository contains a comprehensive security analysis framework for the Valantis STEX (Stake Exchange) protocol - a modular DEX designed for yield-bearing assets. The analysis applies 8 legendary vulnerability patterns to systematically discover and evaluate security issues.
 
+## General Information
+
+Valantis Stake Exchange (STEX) is a modular DEX purpose‑built for trading yield‑bearing assets (e.g., LSTs and yield‑bearing stablecoins) against their underlying tokens.
+
+- Reference Exchange Rate: STEX uses a reference exchange rate contract as the ask price of the yield‑bearing asset, ensuring sales do not occur below fair value.
+- Native Integrations: STEX integrates with the asset’s withdrawal queue/rebalancing mechanism and third‑party lending protocols to maintain liquidity and alignment with underlying yields.
+- Architecture: STEX is built on the Valantis Sovereign Pool contract, a modular framework for constructing DEXes.
+	- See `analysis/VALANTIS_CONTRACTS.md` for Sovereign Pool links (docs, source paths, and key entry points).
+
+Attributes
+- Assets type: Smart Contracts
+- Chains: Other
+- Programming language: Solidity
+- Product types: DeFi
+- Project categories: DEX
+
 ## Methodology
 
 ### Legendary Vulnerability Patterns
@@ -47,18 +63,26 @@ valantis-stex-hunt/
 ## Tools Used
 
 ### JavaScript/Node.js
-- **web3.js** - Smart contract interaction
+- **web3.js** - Smart contract interaction (read-only)
 - **axios** - HTTP requests for data gathering
 - **dotenv** - Environment configuration
 
 ### Python
-- **web3.py** - Web3 integration
+- **web3.py** - Web3 integration (read-only)
 - **pandas** - Data analysis
 - **matplotlib** - Impact visualization
 
 ### Solidity/Foundry
 - **Foundry** - Smart contract testing framework
+- **Fork Mode** - Safe local mainnet simulation
 - **Solidity** - Exploit contract development
+
+## Safety & Testing Philosophy
+
+- **Analysis Phase**: Read-only queries to mainnet (bytecode, events, state)
+- **Testing Phase**: Foundry fork mode creates isolated local copy
+- **Never**: Send transactions to live mainnet
+- **Always**: Use `--fork-url` for exploit testing
 
 ## Getting Started
 
@@ -91,12 +115,24 @@ cp .env.example .env
 ### Daily Execution
 
 ```bash
-# Morning scans
+# Analysis (read-only, safe)
 node analysis/daily_scan.js
-python analysis/stex_analyzer.py
+python3 analysis/stex_analyzer.py
 
 # Review results and investigate promising leads
-# Create exploit POCs as needed
+```
+
+### Testing & PoC Development
+
+**⚠️ SAFETY: Never send transactions to live mainnet**
+
+```bash
+# Use Foundry fork mode for safe testing
+export MAINNET_RPC='<your-mainnet-rpc>'
+forge test --fork-url "$MAINNET_RPC" -vvv
+
+# Fork creates local simulation - no real transactions
+# All exploits run in isolated environment
 ```
 
 ## Key Findings
@@ -139,6 +175,23 @@ This framework is designed for professional bug bounty submission with:
 - Financial impact calculations
 - Professional remediation recommendations
 - Full timeline documentation
+
+## Scope
+
+Please review program scope before investing effort. The following categories are explicitly out of scope for rewards:
+- Price manipulation that does not increase swap output beyond quotes from `convertToToken0`/`convertToToken1` in `stHYPEWithdrawalModule` and `kHYPEWithdrawalModule`.
+- Exploits already performed by the reporter causing damage.
+- Findings requiring leaked keys/credentials or privileged roles (multi‑sig, governance, strategist, keeper).
+- Incorrect third‑party oracle data.
+- Basic economic governance attacks (e.g., 51% attacks).
+- Insolvency due to external lending integrations.
+- Lack of liquidity, best‑practice critiques, Sybil attacks.
+- L1 gas pricing problems.
+- Freezing of own funds due to user error.
+- Impacts from malicious upgrades to third‑party contracts.
+- Temporary impacts from configuration adjustment race conditions.
+
+See `reports/BUG_BOUNTY_SUBMISSION.md` for details.
 
 ## Contact & Disclosure
 

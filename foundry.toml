@@ -1,0 +1,5 @@
+[profile.default]
+src = "tools/src"
+out = "tools/out"
+libs = ["tools/lib"]
+test = "tools/test"

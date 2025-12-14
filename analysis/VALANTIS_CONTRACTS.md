@@ -62,6 +62,11 @@
 - Interface: `src/protocol-factory/interfaces/IProtocolFactory.sol`
 - Structs: `src/pools/structs/SovereignPoolStructs.sol`
 
+### Sovereign Pool Docs
+- Overview: `Sovereign Pool` is the modular base for STEX pools. Start with Valantis Core docs: https://docs.valantis.xyz/ (Pools section).
+- Entry points: `deploySovereignPool`, `initialize`, `setALM`, `setPoolManager`.
+- Code map: `src/pools/SovereignPool.sol`, `src/pools/modules/*`, `src/pools/structs/SovereignPoolStructs.sol` in Valantis Core.
+
 ---
 
 ## Pattern 1: Investigation Checklist
