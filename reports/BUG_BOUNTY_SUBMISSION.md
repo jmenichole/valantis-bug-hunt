@@ -1,10 +1,62 @@
-# Valantis Core - Bug Bounty Submission Report
+# Bug Bounty Submission
+
+This document outlines how to submit findings for the Valantis/STEX bug bounty program and what information is expected in a high‑quality report.
+
+For a concise, Remedy-formatted report, see: `reports/Remedy_Submission_Report.md`.
+
+## Submission Checklist
+- Summary of the issue and clear impact
+- Minimal reproducible example (steps, txs, scripts)
+- Affected contracts, functions, and versions
+- Root cause analysis and exploitability assessment
+- Proposed remediation or mitigations
+- Proof-of-Concept (if applicable)
+
+Supporting files in this workspace:
+- Report (Remedy format): `reports/Remedy_Submission_Report.md`
+- Full analysis: `FINAL_VULNERABILITY_REPORT.md`
+- Timeline: `DISCLOSURE_TIMELINE.md`
+- POC: `tools/src/PermissionlessPoolDeploymentPOC.sol`
+- Tests: `tools/test/AccessControlBypass.t.sol`
+
+## Out of Scope
+The following vulnerabilities are excluded from rewards for this program:
+- Attacks which manipulate bid or ask price but do not yield more output token on swaps than quoted by integrated price conversion functions (`convertToToken0` and `convertToToken1` in `stHYPEWithdrawalModule` and `kHYPEWithdrawalModule`).
+- Attacks already exploited by the reporter, leading to damage.
+- Attacks requiring access to leaked keys/credentials.
+- Attacks requiring access to privileged addresses (e.g., multi‑sig, governance, strategist, keeper).
+- Incorrect data supplied by third‑party oracles.
+- Basic economic governance attacks (e.g., 51% attack).
+- Insolvency risks due to faults in external lending protocol integrations.
+- Lack of liquidity.
+- Best practice critiques.
+- Sybil attacks.
+- Problems caused by L1 gas pricing.
+- Freezing of own funds due to mistaken operation.
+- Impacts from malicious upgrades to third‑party contracts.
+- Temporary impacts resulting from configuration adjustment race conditions.
+
+If your finding might touch an area listed above, clearly justify why it falls outside these exclusions and demonstrates protocol‑level impact.
+
+---
+
+## ⚠️ SCOPE JUSTIFICATION
+
+This vulnerability is **IN SCOPE** because:
+- It does NOT require access to privileged addresses (ProtocolFactory.deploySovereignPool() is external)
+- It enables arbitrary pool creation without owner/governance consent
+- It allows attackers to drain user funds through phishing attacks
+- It represents a critical architectural flaw affecting protocol integrity
+- It has been confirmed on mainnet with working PoC
+
+---
 
 **Date**: December 11, 2025  
-**Researcher**: Security Researcher  
+**Researcher**: jmenichole (Discord)  
 **Protocol**: Valantis Core (Ethereum Mainnet)  
-**Severity**: **HIGH**  
-**Category**: Access Control Bypass (Pattern 6)  
+**Severity**: **HIGH** (CVSS 7.5)  
+**Category**: Access Control Bypass (CWE-284)  
+**Submission Platform**: https://hunt.r.xyz/programs/valantis-stex  
 
 ---
 
